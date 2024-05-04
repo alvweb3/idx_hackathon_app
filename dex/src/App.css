@@ -274,7 +274,6 @@ header {
   justify-content: center; /* Center horizontally */
 }
 
-/* Styling for issue and redeem buttons */
 .issueButton, .redeemButton {
   background-color: #243056; /* You can change this color as needed */
   color: #76A9FA; /* Lighter blue for text, change as needed */
@@ -282,7 +281,8 @@ header {
   border-radius: 100px;
   font-weight: bold;
   transition: 0.3s;
-  margin: 5px; /* Adds space between the buttons */
+  margin: 20px; /* Adds space between the buttons */
+  font-size: 20px;
 }
 
 .issueButton:hover, .redeemButton:hover {
@@ -390,7 +390,6 @@ header {
 
 h1, h2 {
   text-align: center;
-  padding: 10px;
 }
 
 h2 {
@@ -398,9 +397,9 @@ h2 {
   color: #aaa;
 }
 
-.selectedtokenindex {
+.selectedTokenIndex {
   margin-top: 20px;
-  min-width: 50px;
+  max-width: 100px;
   height: 30px;
   background-color: #3a4157;
   top: 36px;
@@ -415,13 +414,23 @@ h2 {
   padding-right: 8px;
 }
 
+.modalContentIndex {
+  max-width: 500px; /* Set a maximum width to restrict expansion */
+  border-top: 1px solid #363e54;
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
 .selectedTokensDisplay {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: wrap; /* Ensure it wraps if the container is too narrow */
   gap: 10px;
   justify-content: center;
   margin-top: 10px;
 }
+
 
 .selectedToken {
   background-color: #3a4157;
@@ -448,4 +457,45 @@ h2 {
 
 .removeTokenButton:hover {
   background-color: #ff7875;
+}
+
+.indexNameInput, .indexSymbolInput {
+  margin-top: 20px;
+}
+
+.indexNameInput input, .indexSymbolInput input {
+  width: 300px;
+  padding: 8px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+.indexNameInput h2, .indexSymbolInput h2 {
+  color: #aaa;
+}
+
+
+.tokenContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%; /* Ensures the container takes full width */
+}
+
+.createIndex {
+  background-color: #243056; /* You can change this color as needed */
+  color: #76A9FA; /* Lighter blue for text, change as needed */
+  padding: 10px 20px; /* Uniform padding */
+  border-radius: 100px;
+  font-weight: bold;
+  transition: 0.3s;
+  margin: 25px;
+  font-size: 20px;
+}
+
+.createIndex:hover {
+  cursor: pointer;
+  background-color: #3b4874; /* Darker on hover */
+  color: #5981F3; /* Original blue color on hover */
 }

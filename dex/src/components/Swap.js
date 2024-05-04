@@ -223,7 +223,6 @@ function Swap(props) {
             placeholder="0"
             value={tokenOneAmount}
             onChange={changeAmount}
-            disabled={!prices}
           />
           <Input placeholder="0" value={tokenTwoAmount} disabled={true} />
           <div className="switchButton" onClick={switchTokens}>

@@ -7,6 +7,9 @@ function Factory(props) {
   const [tokenOne, setTokenOne] = useState(tokenList[0]);
   const [isOpen, setIsOpen] = useState(false);
   const [selectedTokens, setSelectedTokens] = useState([]);
+  const [indexName, setIndexName] = useState('');
+  const [indexSymbol, setIndexSymbol] = useState('');
+
 
   function openModal() {
     setIsOpen(true);
@@ -28,23 +31,55 @@ function Factory(props) {
     <>
       <div className="headerContainer">
         <h1>Create Your Index</h1>
-        <div>
+        <div className="tokenContainer">
           <h2>Select the underlying tokens</h2>
-          <div className="selectedtokenindex" onClick={openModal}>
-            <img src={tokenOne.img} alt={tokenOne.ticker} className="assetLogo" />
+          <div className="selectedTokenIndex" onClick={openModal}>
+            <img
+              src={tokenOne.img}
+              alt={tokenOne.ticker}
+              className="assetLogo"
+            />
             {tokenOne.ticker}
             <DownOutlined />
           </div>
           <div className="selectedTokensDisplay">
             {selectedTokens.map((token, index) => (
               <div className="selectedToken" key={index}>
-                <img src={token.img} alt={token.ticker} className="tokenLogoSmall" />
+                <img
+                  src={token.img}
+                  alt={token.ticker}
+                  className="tokenLogoSmall"
+                />
                 {token.ticker}
-                <button className="removeTokenButton" onClick={() => removeToken(token.ticker)}>Remove</button>
+                <button
+                  className="removeTokenButton"
+                  onClick={() => removeToken(token.ticker)}
+                >
+                  Remove
+                </button>
               </div>
             ))}
           </div>
+          <div className="indexNameInput">
+            <h2>Choose an index name</h2>
+            <input
+              type="text"
+              placeholder="Enter index name"
+              value={indexName}
+              onChange={(e) => setIndexName(e.target.value)}
+            />
+          </div>
+          <div className="indexSymbolInput">
+            <h2>Choose an index symbol</h2>
+            <input
+              type="text"
+              placeholder="Enter index symbol"
+              value={indexSymbol}
+              onChange={(e) => setIndexSymbol(e.target.value)}
+            />
+          </div>
         </div>
+      <div className="createIndex">Create Index</div>
       </div>
       <Modal
         open={isOpen}
@@ -52,13 +87,9 @@ function Factory(props) {
         onCancel={() => setIsOpen(false)}
         title="Select a token"
       >
-        <div className="modalContent">
+        <div className="modalContentIndex">
           {tokenList.map((token, i) => (
-            <div
-              className="tokenChoice"
-              key={i}
-              onClick={() => modifyToken(i)}
-            >
+            <div className="tokenChoice" key={i} onClick={() => modifyToken(i)}>
               <img src={token.img} alt={token.ticker} className="tokenLogo" />
               <div className="tokenChoiceNames">
                 <div className="tokenName">{token.name}</div>
@@ -70,6 +101,7 @@ function Factory(props) {
       </Modal>
     </>
   );
+  
 }
 
 export default Factory;
