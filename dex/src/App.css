@@ -233,6 +233,8 @@ header {
 
 .modalContent {
   border-top: 1px solid #363e54;
+  height: 320px; /* Set a fixed height */
+  overflow-y: auto; /* Enable vertical scrolling */
   /* padding-top: 20px; */
   margin-top: 20px;
   display: flex;
@@ -416,6 +418,8 @@ h2 {
 
 .modalContentIndex {
   max-width: 500px; /* Set a maximum width to restrict expansion */
+  height: 320px; /* Set a fixed height */
+  overflow-y: auto; /* Enable vertical scrolling */
   border-top: 1px solid #363e54;
   margin-top: 20px;
   display: flex;
@@ -425,20 +429,21 @@ h2 {
 
 .selectedTokensDisplay {
   display: flex;
-  flex-wrap: wrap; /* Ensure it wraps if the container is too narrow */
-  gap: 10px;
-  justify-content: center;
+  flex-direction: column; /* This stacks children vertically */
+  align-items: center; /* Center-align the token entries */
+  gap: 10px; /* Keep some space between entries */
   margin-top: 10px;
 }
 
-
-.selectedToken {
+.selectedToken2 {
   background-color: #3a4157;
   border-radius: 8px;
   padding: 5px 10px;
   display: flex;
+  flex-direction: row;
   align-items: center;
-  gap: 5px;
+  justify-content: space-between;
+  width: 100%;
 }
 
 .tokenLogoSmall {
@@ -466,7 +471,7 @@ h2 {
 .indexNameInput input, .indexSymbolInput input {
   width: 300px;
   padding: 8px;
-  border-radius: 5px;
+  border-radius: 100px;
   border: 1px solid #ccc;
 }
 
@@ -498,4 +503,11 @@ h2 {
   cursor: pointer;
   background-color: #3b4874; /* Darker on hover */
   color: #5981F3; /* Original blue color on hover */
+}
+
+.tokenLogoSmall + .tokenTicker {
+  margin-left: 0px;
+  color:white;
+  font-weight: bold;
+  font-size: 14px;
 }

@@ -4,28 +4,38 @@ import { DownOutlined } from "@ant-design/icons";
 import tokenList from "../tokenList.json";
 
 function Factory(props) {
+  // Updated to handle tokens with amounts
   const [tokenOne, setTokenOne] = useState(tokenList[0]);
   const [isOpen, setIsOpen] = useState(false);
   const [selectedTokens, setSelectedTokens] = useState([]);
   const [indexName, setIndexName] = useState('');
   const [indexSymbol, setIndexSymbol] = useState('');
 
-
   function openModal() {
     setIsOpen(true);
   }
 
   function modifyToken(i) {
-    setTokenOne(tokenList[i]);
-    if (!selectedTokens.find(token => token.ticker === tokenList[i].ticker)) {
-      setSelectedTokens([...selectedTokens, tokenList[i]]);
+    const tokenData = tokenList[i];
+    const tokenExists = selectedTokens.some(item => item.token.ticker === tokenData.ticker);
+
+    if (!tokenExists) {
+      setSelectedTokens([...selectedTokens, { token: tokenData, amount: 1 }]);
     }
     setIsOpen(false);
   }
 
-  function removeToken(ticker) {
-    setSelectedTokens(selectedTokens.filter(token => token.ticker !== ticker));
+  function updateTokenAmount(ticker, newAmount) {
+    setSelectedTokens(selectedTokens.map(item =>
+      item.token.ticker === ticker ? { ...item, amount: parseInt(newAmount) } : item
+    ));
   }
+
+  function removeToken(ticker) {
+    setSelectedTokens(selectedTokens.filter(item => item.token.ticker !== ticker));
+  }
+
+  console.log(tokenOne.img);
 
   return (
     <>
@@ -43,17 +53,24 @@ function Factory(props) {
             <DownOutlined />
           </div>
           <div className="selectedTokensDisplay">
-            {selectedTokens.map((token, index) => (
-              <div className="selectedToken" key={index}>
+            {selectedTokens.map((item, index) => (
+              <div className="selectedToken2" key={index}>
                 <img
-                  src={token.img}
-                  alt={token.ticker}
+                  src={item.token.img}
+                  alt={item.token.ticker}
                   className="tokenLogoSmall"
                 />
-                {token.ticker}
+                <span className="tokenTicker">{item.token.ticker}</span>
+                <input
+                  type="number"
+                  value={item.amount}
+                  onChange={(e) => updateTokenAmount(item.token.ticker, e.target.value)}
+                  min="1"
+                  style={{ marginLeft: '10px' }}
+                />
                 <button
                   className="removeTokenButton"
-                  onClick={() => removeToken(token.ticker)}
+                  onClick={() => removeToken(item.token.ticker)}
                 >
                   Remove
                 </button>
@@ -61,7 +78,7 @@ function Factory(props) {
             ))}
           </div>
           <div className="indexNameInput">
-            <h2>Choose an index name</h2>
+            <h2>Enter index name</h2>
             <input
               type="text"
               placeholder="Enter index name"
@@ -70,7 +87,7 @@ function Factory(props) {
             />
           </div>
           <div className="indexSymbolInput">
-            <h2>Choose an index symbol</h2>
+            <h2>Enter index symbol</h2>
             <input
               type="text"
               placeholder="Enter index symbol"
@@ -78,6 +95,7 @@ function Factory(props) {
               onChange={(e) => setIndexSymbol(e.target.value)}
             />
           </div>
+          <p>{console.log(selectedTokens)}</p>
         </div>
       <div className="createIndex">Create Index</div>
       </div>
@@ -101,7 +119,6 @@ function Factory(props) {
       </Modal>
     </>
   );
-  
 }
 
 export default Factory;
