@@ -3,11 +3,12 @@ import ReactDOM from "react-dom/client";
 import "./index.css";
 import App from "./App";
 import { BrowserRouter } from "react-router-dom";
-import { configureChains, mainnet, WagmiConfig, createClient } from "wagmi";
+import { configureChains, WagmiConfig, createClient } from "wagmi";
+import { mainnet, canto, hardhat} from "wagmi/chains";
 import { publicProvider } from "wagmi/providers/public";
 
 const { provider, webSocketProvider } = configureChains(
-  [mainnet],
+  [hardhat],
   [publicProvider()]
 );
 

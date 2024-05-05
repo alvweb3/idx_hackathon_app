@@ -1,69 +1,15 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Modal } from "antd";
 import { DownOutlined } from "@ant-design/icons";
 import tokenList from "../tokenList.json";
-import { useContract, useSigner } from 'wagmi';
-import { Controller, Erc20, SetToken } from '../abis';
-import { ethers } from "ethers";
 
-function Factory(props) {
+function Factoryv2(props) {
+  // Updated to handle tokens with amounts
   const [tokenOne, setTokenOne] = useState(tokenList[0]);
   const [isOpen, setIsOpen] = useState(false);
   const [selectedTokens, setSelectedTokens] = useState([]);
   const [indexName, setIndexName] = useState('');
   const [indexSymbol, setIndexSymbol] = useState('');
-  const [loading, setLoading] = useState(false);
-
-  const setTokenAddress = "0xa4c8d221d8BB851f83aadd0223a8900A6921A349";
-  const firstModuleAddress = "";
-  const secondModuleAddress = "";
-  const managerAddress = "";
-
-  const { data: signer } = useSigner();
-
-  const setTokenCreatorContract = useContract({
-    addressOrName: setTokenAddress,
-    contractInterface: SetToken,
-    signerOrProvider: signer,
-  });
-
-  useEffect(() => {
-    if (selectedTokens.length > 0) {
-      const componentAddresses = selectedTokens.map(token => token.token.address);
-      console.log("Component Addresses:", componentAddresses);
-      const decimaaals = selectedTokens.map(token => token.token.decimals);
-      console.log("Decimals:", decimaaals);
-      const componentUnits = selectedTokens.map(token => ethers.utils.parseUnits(token.amount.toString(), token.token.decimals));
-      console.log("Component Units (in Wei):", componentUnits);
-    }
-  }, [selectedTokens]);
-
-  async function createIndex() {
-    if (!signer) return;
-
-    setLoading(true);
-    try {
-      const componentAddresses = selectedTokens.map(token => token.token.address);
-      const componentUnits = selectedTokens.map(token => ethers.utils.parseUnits(token.amount.toString(), token.token.decimals));
-      const modules = [firstModuleAddress, secondModuleAddress];
-
-      const tx = await setTokenCreatorContract.create(
-        componentAddresses,
-        componentUnits,
-        modules,
-        managerAddress,
-        indexName,
-        indexSymbol
-      );
-      await tx.wait();
-      alert('Index created successfully!');
-    } catch (error) {
-      console.error('Error creating index:', error);
-      alert('Failed to create index.');
-    } finally {
-      setLoading(false);
-    }
-  }
 
   function openModal() {
     setIsOpen(true);
@@ -74,7 +20,7 @@ function Factory(props) {
     const tokenExists = selectedTokens.some(item => item.token.ticker === tokenData.ticker);
 
     if (!tokenExists) {
-      setSelectedTokens([...selectedTokens, { token: tokenData, amount: 1, token: {...tokenData} }]);
+      setSelectedTokens([...selectedTokens, { token: tokenData, amount: 1 }]);
     }
     setIsOpen(false);
   }
@@ -151,9 +97,7 @@ function Factory(props) {
           </div>
           <p>{console.log(selectedTokens)}</p>
         </div>
-        <button className="createIndex" onClick={createIndex} disabled={loading}>
-          {loading ? 'Creating...' : 'Create Index'}
-        </button>
+      <div className="createIndex">Create Index</div>
       </div>
       <Modal
         open={isOpen}
@@ -177,4 +121,4 @@ function Factory(props) {
   );
 }
 
-export default Factory;
+export default Factoryv2;
