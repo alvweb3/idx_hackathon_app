@@ -7,6 +7,7 @@ import {ethers} from "ethers";
 function SetDetails() {
   const { address } = useParams(); // Get the address from the URL
   const [tokenContracts, setTokenContracts] = useState([]);
+  const [tokenAmount, setTokenAmount] = useState('');
 
   const { data, isError, isLoading } = useContractReads({
     contracts: [
@@ -58,6 +59,15 @@ function SetDetails() {
         <p>{isLoading ? "Loading..." : isError ? "Error loading data" : `Symbol: ${data ? data[1] : 'N/A'}`}</p>
         <p>{isLoading ? "Loading..." : isError ? "Error loading data" : `Total Supply: ${data ? formatUnits(data[2], data[3]) : 'N/A'}`}</p>
         <p>{tokenNamesLoading ? "Loading token names..." : tokenNamesError ? "Error loading token names" : `Underlying Assets: ${tokenNames && tokenNames.map(name => name || "N/A").join(', ')}`}</p>
+        <div className="indexSymbolInput">
+            <h2>Enter amount of index tokens to issue/redeem</h2>
+            <input
+              type="text"
+              placeholder="Amount"
+              value={tokenAmount}
+              onChange={(e) => setTokenAmount(e.target.value)}
+            />
+        </div>
         <div className="buttonContainer">
         <div className="issueButton">Issue</div>
         <div className="redeemButton">Redeem</div>
