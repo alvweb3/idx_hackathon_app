@@ -1,3 +1,3 @@
 # Application Page of the IDX Project
 
-This project has two main folders: dex and dexBack. However, dexBack should be ignored, as it was only used to test backend functionality. The whole project is inside the dex folder.
+This is the source code of the IDX application. It includes the front end and the smart contract integration.
