@@ -1,3 +1,3 @@
-# Landing Page of the IDX Project
+# Application Page of the IDX Project
 
-You can check the live website at: https://idx-hackathon-lp.vercel.app/
+This project has two main folders: dex and dexBack. However, dexSwap should be ignored, as it was only used to test backend functionality. The whole project is inside the dex folder.
