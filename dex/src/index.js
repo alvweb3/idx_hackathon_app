@@ -8,7 +8,7 @@ import { mainnet, canto, hardhat} from "wagmi/chains";
 import { publicProvider } from "wagmi/providers/public";
 
 const { provider, webSocketProvider } = configureChains(
-  [mainnet],
+  [hardhat],
   [publicProvider()]
 );
 
