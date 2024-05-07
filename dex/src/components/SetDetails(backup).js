@@ -149,7 +149,7 @@ function SetDetails(props) {
     address: data[4][approvalPosition],
     abi: Erc20,
     functionName: 'approve',
-    args: [basicIssuanceModuleAddress, parseUnits(`${ ethers.utils.parseEther(`1`)}`, stateComponentDecimals[approvalPosition])],
+    args: [basicIssuanceModuleAddress, parseUnits("1", stateComponentDecimals[approvalPosition])],
   });
 
   const { data: approval1, isSuccess: isSuccess1, write: approve } = useContractWrite(config1);

@@ -13,7 +13,6 @@ function SetDetails(props) {
   const [tokenContracts, setTokenContracts] = useState([]);
   const [stateComponentDecimals, setStateComponentDecimals] = useState([]);
 
-  const ADDRESS_ZERO = "0x0000000000000000000000000000000000000000";
   const basicIssuanceModuleAddress = "0x689Fb32D4197249639441CAaD53cfa73454dC19e";
 
   const { data, isError, isLoading } = useContractReads({
@@ -121,7 +120,6 @@ function SetDetails(props) {
     return bigInt(`${negative ? '-' : ''}${integer}${fraction}`);
   }
 
-  /*
   // GET COMPONENTS AND UNITS FOR APPROVAL
   const { data: componentUnits } = useContractRead({
     address: basicIssuanceModuleAddress,
@@ -129,30 +127,17 @@ function SetDetails(props) {
     functionName: 'getRequiredComponentUnitsForIssue',
     args: [address, ethers.utils.parseEther(`${tokenAmount}`)],
   });
-  */
-
- 
 
   // -----------------------------------------
 
-  /*
-  const { config: initializeConfig } = usePrepareContractWrite({
-    address: basicIssuanceModuleAddress,
-    abi: BasicIssuanceModule,
-    functionName: 'initialize',
-    args: [address, ADDRESS_ZERO]
-  })
-
-  const { write: initialize } = useContractWrite(initializeConfig);*/
-
   const { config: config1 } = usePrepareContractWrite({
-    address: data[4][approvalPosition],
+    address: componentUnits[0][approvalPosition],
     abi: Erc20,
     functionName: 'approve',
-    args: [basicIssuanceModuleAddress, parseUnits(`${ ethers.utils.parseEther(`1`)}`, stateComponentDecimals[approvalPosition])],
+    args: [basicIssuanceModuleAddress, parseUnits(`${componentUnits[1][approvalPosition]}`, stateComponentDecimals[approvalPosition])],
   });
 
-  const { data: approval1, isSuccess: isSuccess1, write: approve } = useContractWrite(config1);
+  const { data: approval1, isSuccess: isSuccess1, write: approve1 } = useContractWrite(config1);
 
   const { config: config3 } = usePrepareContractWrite({
     address: basicIssuanceModuleAddress,
@@ -186,7 +171,6 @@ function SetDetails(props) {
     <>
       <div className="verticalStack">
         <h1>Index Information</h1>
-        {/*<div className="issueButton" onClick={() => initialize?.()}>Initialize</div>*/}
         <p>{isLoading ? "Loading..." : isError ? "Error loading data" : `Set Address: ${address ? address : 'N/A'}`}</p>
         <p>{isLoading ? "Loading..." : isError ? "Error loading data" : `Name: ${data ? data[0] : 'N/A'}`}</p>
         <p>{isLoading ? "Loading..." : isError ? "Error loading data" : `Symbol: ${data ? data[1] : 'N/A'}`}</p>
@@ -211,10 +195,10 @@ function SetDetails(props) {
             />
         </div>
         <div className="buttonContainer">
-        <div className="issueButton" onClick={() => approve?.()}>Approve</div>
+        <div className="issueButton" onClick={() => approve1?.()}>Approve</div>
         <div className="issueButton" onClick={() => issue?.()}>Issue</div>
         <div className="redeemButton" onClick={() => redeem?.()}>Redeem</div>
-  </div>
+      </div>
       </div>
     </>
   );

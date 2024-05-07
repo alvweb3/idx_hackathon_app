@@ -5,7 +5,7 @@ import { BasicIssuanceModule, Controller, Erc20, SetToken } from '../abis';
 
 function Indexes(props) {
   const { address, isConnected } = props;
-  const setTokenAddress = "0xa4c8d221d8BB851f83aadd0223a8900A6921A349";
+  const controllerAddress = "0x0Dfff3B3B9Cf50F19fEb6B5EBC9E3b800e3cd596";
 
   // Read the list of sets
   const {
@@ -14,7 +14,7 @@ function Indexes(props) {
     isLoading: isLoadingSets,
   } = useContractRead({
     abi: Controller,
-    address: setTokenAddress,
+    address: controllerAddress,
     functionName: "getSets",
   });
 

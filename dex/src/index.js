@@ -3,29 +3,38 @@ import ReactDOM from "react-dom/client";
 import "./index.css";
 import App from "./App";
 import { BrowserRouter } from "react-router-dom";
-import { configureChains, WagmiConfig, createClient } from "wagmi";
-import { mainnet, canto, hardhat} from "wagmi/chains";
-import { publicProvider } from "wagmi/providers/public";
+import { WagmiConfig, createClient, configureChains } from 'wagmi';
+import { jsonRpcProvider } from 'wagmi/providers/jsonRpc';
+import { WagmiProvider } from './context/WagmiContext';
 
-const { provider, webSocketProvider } = configureChains(
-  [hardhat],
-  [publicProvider()]
-);
+export const cantoTestnet = {
+  id: 7701,
+  name: 'Canto Testnet',
+  nativeCurrency: {
+    decimals: 18,
+    name: 'Canto',
+    symbol: 'CANTO',
+  },
+  rpcUrls: {
+    default: 'https://canto-testnet.plexnode.wtf',
+  },
+  blockExplorers: {
+    default: { name: 'Tuber', url: 'https://testnet.tuber.build/' },
+  },
+};
 
-const client = createClient({
-  autoConnect: true,
-  provider,
-  webSocketProvider,
-});
-
+const { provider } = configureChains([cantoTestnet], [jsonRpcProvider({ rpc: chain => ({ http: chain.rpcUrls.default }) })]);
+const client = createClient({ autoConnect: true, provider });
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
     <WagmiConfig client={client}>
-      <BrowserRouter>
-        <App />
-      </BrowserRouter>
+      <WagmiProvider>
+        <BrowserRouter>
+          <App />
+        </BrowserRouter>
+      </WagmiProvider>
     </WagmiConfig>
   </React.StrictMode>
 );

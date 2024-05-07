@@ -3,34 +3,34 @@ import { useContractRead, useContractReads, useContractWrite, usePrepareContract
 import { useParams } from 'react-router-dom';
 import { Erc20, SetToken, BasicIssuanceModule } from '../abis';
 import { BigNumber, utils, ethers } from 'ethers';
+import { writeContract } from '@wagmi/core'
 import bigInt from "big-integer";
 
 function SetDetails(props) {
   const { userWallet, isConnected } = props;
   const { address } = useParams(); // Get the address from the URL
-  const [tokenAmount, setTokenAmount] = useState(1);
-  const [approvalPosition, setApprovalPosition] = useState(0);
   const [tokenContracts, setTokenContracts] = useState([]);
-  const [stateComponentDecimals, setStateComponentDecimals] = useState([]);
+  const [tokenAmount, setTokenAmount] = useState(1);
 
-  const ADDRESS_ZERO = "0x0000000000000000000000000000000000000000";
+  console.log("Connected: ", isConnected);
+
   const basicIssuanceModuleAddress = "0x689Fb32D4197249639441CAaD53cfa73454dC19e";
 
   const { data, isError, isLoading } = useContractReads({
     contracts: [
-      { abi: SetToken, address: address, functionName: 'name' },
-      { abi: SetToken, address: address, functionName: 'symbol' },
-      { abi: SetToken, address: address, functionName: 'totalSupply' },
-      { abi: SetToken, address: address, functionName: 'decimals' },
-      { abi: SetToken, address: address, functionName: 'getComponents' },
+      { abi: SetToken, address, functionName: 'name' },
+      { abi: SetToken, address, functionName: 'symbol' },
+      { abi: SetToken, address, functionName: 'totalSupply' },
+      { abi: SetToken, address, functionName: 'decimals' },
+      { abi: SetToken, address, functionName: 'getComponents' },
     ],
   });
 
   useEffect(() => {
     if (data && data[4] && data[4].length) {
-      setTokenContracts(data[4].map((tokenAddress) => ({
+      setTokenContracts(data[4].map((address) => ({
         abi: Erc20,
-        address: tokenAddress,
+        address,
         functionName: 'name'
       })));
     }
@@ -39,24 +39,6 @@ function SetDetails(props) {
   const { data: tokenNames, isLoading: tokenNamesLoading, isError: tokenNamesError } = useContractReads({
     contracts: tokenContracts
   });
-
-  useEffect(() => {
-    if (data && data[4] && data[4].length) {
-      setStateComponentDecimals(data[4].map((tokenAddress) => ({
-        abi: Erc20,
-        address: tokenAddress,
-        functionName: 'decimals'
-      })));
-    }
-  }, [data]);
-
-  const { data: tokenDecimals, isLoading: tokenDecimalsLoading, isError: tokenDecimalsError } = useContractReads({
-    contracts: stateComponentDecimals
-  });
-
-  // console.log("Data: ", data);
-  // console.log("TOKEN DECIMALS: ", tokenDecimals);
-  // console.log("TOKEN Names: ", tokenNames);
 
   function formatUnits(value, decimals) {
     let display = value.toString();
@@ -76,8 +58,6 @@ function SetDetails(props) {
   }
 
   function parseUnits(value, decimals) {
-    if (value === undefined || decimals === undefined) return bigInt(0);
-
     let [integer, fraction = '0'] = value.split('.');
   
     const negative = integer.startsWith('-');
@@ -120,39 +100,43 @@ function SetDetails(props) {
   
     return bigInt(`${negative ? '-' : ''}${integer}${fraction}`);
   }
+  
+  // console.log("Set Address ", address);
+  // console.log("Token Amount: ", ethers.utils.parseEther(`${tokenAmount}`));
+  // console.log("Bassic Issuance Module Address: ", basicIssuanceModuleAddress);
 
-  /*
-  // GET COMPONENTS AND UNITS FOR APPROVAL
   const { data: componentUnits } = useContractRead({
     address: basicIssuanceModuleAddress,
     abi: BasicIssuanceModule,
     functionName: 'getRequiredComponentUnitsForIssue',
     args: [address, ethers.utils.parseEther(`${tokenAmount}`)],
   });
-  */
-
- 
+  
+  //console.log("Components: ", componentUnits);
 
   // -----------------------------------------
 
-  /*
-  const { config: initializeConfig } = usePrepareContractWrite({
-    address: basicIssuanceModuleAddress,
-    abi: BasicIssuanceModule,
-    functionName: 'initialize',
-    args: [address, ADDRESS_ZERO]
-  })
-
-  const { write: initialize } = useContractWrite(initializeConfig);*/
+  const addresses = componentUnits[0];
+  const tokenAmounts = componentUnits[1];
+  const componentDecimals = data[3];
 
   const { config: config1 } = usePrepareContractWrite({
-    address: data[4][approvalPosition],
+    address: addresses[0],
     abi: Erc20,
     functionName: 'approve',
-    args: [basicIssuanceModuleAddress, parseUnits(`${ ethers.utils.parseEther(`1`)}`, stateComponentDecimals[approvalPosition])],
-  });
+    args: [basicIssuanceModuleAddress, parseUnits(`${tokenAmounts[0]}`, componentDecimals[0] )]
+  })
+  
+  const { data: approval1, isSuccess: isSuccess1, write: approve1 } = useContractWrite(config1)
 
-  const { data: approval1, isSuccess: isSuccess1, write: approve } = useContractWrite(config1);
+  const { config: config2 } = usePrepareContractWrite({
+    address: addresses[1],
+    abi: Erc20,
+    functionName: 'approve',
+    args: [basicIssuanceModuleAddress, parseUnits(`${tokenAmounts[1]}`, componentDecimals[1] )]
+  })
+  
+  const { data: approval2,  isSuccess: isSuccess2, write: approve2 } = useContractWrite(config2)
 
   const { config: config3 } = usePrepareContractWrite({
     address: basicIssuanceModuleAddress,
@@ -172,21 +156,16 @@ function SetDetails(props) {
   
   const { data: redeemData,  isSuccess: isSuccess4, write: redeem } = useContractWrite(config4)
 
-  const handleInputChangeAmount = (event) => {
+  const handleInputChange = (event) => {
     const { value } = event.target;
-    setTokenAmount(value === null ? 0 : value);
-  };
-
-  const handleInputChangeApproval = (event) => {
-    const { value } = event.target;
-    setApprovalPosition(value === null ? 0 : value);
+    // Set tokenAmount to '0' if the input is cleared, otherwise to the input value
+    setTokenAmount(value === '' ? '0' : value);
   };
 
   return (
     <>
       <div className="verticalStack">
         <h1>Index Information</h1>
-        {/*<div className="issueButton" onClick={() => initialize?.()}>Initialize</div>*/}
         <p>{isLoading ? "Loading..." : isError ? "Error loading data" : `Set Address: ${address ? address : 'N/A'}`}</p>
         <p>{isLoading ? "Loading..." : isError ? "Error loading data" : `Name: ${data ? data[0] : 'N/A'}`}</p>
         <p>{isLoading ? "Loading..." : isError ? "Error loading data" : `Symbol: ${data ? data[1] : 'N/A'}`}</p>
@@ -195,26 +174,18 @@ function SetDetails(props) {
         <div className="indexSymbolInput">
             <h2>Enter amount of index tokens to issue/redeem</h2>
             <input
-              type="number"
+              type="text"
               placeholder="Amount"
               value={tokenAmount}
-              onChange={handleInputChangeAmount}
-            />
-        </div>
-        <div className="indexSymbolInput">
-            <h2>Enter position of token to approve</h2>
-            <input
-              type="number"
-              placeholder="Amount"
-              value={approvalPosition}
-              onChange={handleInputChangeApproval}
+              onChange={handleInputChange}
             />
         </div>
         <div className="buttonContainer">
-        <div className="issueButton" onClick={() => approve?.()}>Approve</div>
+        <div className="issueButton" onClick={() => approve1?.()}>Approve Token 1</div>
+        <div className="issueButton" onClick={() => approve2?.()}>Approve Token 2</div>
         <div className="issueButton" onClick={() => issue?.()}>Issue</div>
         <div className="redeemButton" onClick={() => redeem?.()}>Redeem</div>
-  </div>
+      </div>
       </div>
     </>
   );
